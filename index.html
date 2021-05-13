@@ -92,7 +92,7 @@ body{
 </defs>
 
 <image x="0" y="0" width="900" height="900" xlink:href="floor.png"/>
-
+<g id="monster_area"></g>
 <g transform="translate(450 850)" id="player">
 	<g transform="rotate(-90 0 0)" id="rotate1">
 		<image x="-50" y="-50" width="100" height="100" xlink:href="player.gif"/>
@@ -139,6 +139,7 @@ body{
 	var step=document.getElementById("step");
 	var tune=document.getElementById("tune");
 	var title=document.getElementById("title");
+	var monster_area=document.getElementById("monster_area");
 	var bound=svg1.getBoundingClientRect();
 	var bound_left=Math.round(bound.left);
 	var bound_top=Math.round(bound.top);
@@ -157,7 +158,7 @@ body{
 		title.setAttribute("transform","translate(0 -450)");
 		setTimeout(function(){
 			tune.volume=0.4;
-			tune.play();
+			//tune.play();
 			light.setAttribute("r","90");
 			torchlight.setAttribute("r","100");
 			ray.setAttribute("stroke-width","150");
@@ -266,6 +267,36 @@ body{
 		return Math.sqrt(xs+ys);
 	};
 
+	var max=10;
+	function create_monsters(){
+		//new Audio("appear.mp3").play();
+		for(var i=0;i<max;i++){
+			xm=Math.round(((Math.random()*850)));
+			ym=Math.round(((Math.random()*850)));
+				while(Math.getDistance(x-25,y-25,xm,ym)<25){
+					x=Math.round(((Math.random()*92)));y=Math.round(((Math.random()*92)));
+				}
+			g2=document.createElementNS(svg1.namespaceURI,"g");
+			if(x<10){xm="0"+xm};if(ym<10){ym="0"+ym};
+			g2.setAttribute("transform","translate("+xm+" "+ym+")");
+			g2.setAttribute("class","spider");
+			g2.setAttribute("id","idm_"+i);
+			monster=document.createElementNS(svg1.namespaceURI,"image");
+			monster.setAttributeNS("http://www.w3.org/1999/xlink","href","monster.gif");
+			monster.setAttribute("x",-4);
+			monster.setAttribute("y",-4);
+			p1={x:x,y:y};
+			mp2={x:x+4,y:y+4};
+			monster.setAttribute("transform","rotate("+Math.round(Math.atan2(mp2.y-p1.y,mp2.x-p1.x)*180/Math.PI)+" 0 0)");
+			monster.setAttribute("width",150);
+			monster.setAttribute("height",150);
+			monster.setAttribute("opacity",1);
+			monster.setAttribute("id","img_"+i);
+			monster_area.appendChild(g2);
+			g2.appendChild(monster);
+		}
+	}
+	create_monsters();
 </script>
 </body>
 </html>
