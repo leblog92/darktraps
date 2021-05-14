@@ -4,62 +4,65 @@
 <meta charset="utf-8">
 <title>Dark Traps</title>
 <style>
-html,body{
-height:100%;
-margin:0;
-}
-body{
-	background: linear-gradient(135deg, rgba(0,0,0,1), rgba(0,0,0,0.8), rgba(0,0,0,1)), url("floor.png");
-	font-family:Consolas;
-	text-align:center;
-}
-.main {
-    height:100%;
-    width:100%;
-    display:table;
-}
-.wrapper {
-    display:table-cell;
-    height:100%;
-    vertical-align: middle;
-}
-#div1{
-	background:rgba(255,255,255,0.25);
-	text-align:left;
-	position:fixed;
-	top:8px;
-	left:8px;
-	padding:8px;
-	user-select:none;
-	border-radius:8px;
-}
-#svg1{
-	width:900px;
-	height:900px;
-	box-shadow:10px 10px 20px rgba(0,0,0,0.5);
-	cursor:crosshair;
-}
-#doorL,#doorR{
-	transition:6s;
-}
-#scale1{
-	transition:3s;
-}
-#light{
-	transition:3s;
-}
-#torchlight{
-	transition:r 3s;
-}
-#ray{
-	transition:stroke-width 3s;
-}
-#title{
-	transition:6s;
-}
-#start{
-	transition:1s;
-}
+	html,body{
+	height:100%;
+	margin:0;
+	}
+	body{
+		background: linear-gradient(135deg, rgba(0,0,0,1), rgba(0,0,0,0.8), rgba(0,0,0,1)), url("floor.png");
+		font-family:Consolas;
+		text-align:center;
+	}
+	.main {
+		height:100%;
+		width:100%;
+		display:table;
+	}
+	.wrapper {
+		display:table-cell;
+		height:100%;
+		vertical-align: middle;
+	}
+	#div1{
+		background:rgba(255,255,255,0.25);
+		text-align:left;
+		position:fixed;
+		top:8px;
+		left:8px;
+		padding:8px;
+		user-select:none;
+		border-radius:8px;
+	}
+	#svg1{
+		width:900px;
+		height:900px;
+		box-shadow:10px 10px 20px rgba(0,0,0,0.5);
+		cursor:crosshair;
+	}
+	#doorL,#doorR{
+		transition:6s;
+	}
+	#scale1{
+		transition:3s;
+	}
+	#light{
+		transition:3s;
+	}
+	#torchlight{
+		transition:r 3s;
+	}
+	#ray{
+		transition:stroke-width 3s;
+	}
+	#title{
+		transition:6s;
+	}
+	#start{
+		transition:1s;
+	}
+	g[id^="img_"]{
+		transition:opacity linear 400ms 1s;
+	}
 </style>
 </head>
 <body>
@@ -92,7 +95,7 @@ body{
 </defs>
 
 <image x="0" y="0" width="900" height="900" xlink:href="floor.png"/>
-<g id="monster_area"></g>
+
 <g transform="translate(450 850)" id="player">
 	<g transform="rotate(-90 0 0)" id="rotate1">
 		<image x="-50" y="-50" width="100" height="100" xlink:href="player.gif"/>
@@ -100,6 +103,8 @@ body{
 </g>
 
 <rect x="0" y="0" width="900" height="900" fill="#000" opacity="1" style="mask:url(#hide)"/>
+
+<g id="monster_area"></g>
 
 <g id="start" transform="translate(450 450)">
 	<g transform="scale(1)" id="scale1">
@@ -158,7 +163,7 @@ body{
 		title.setAttribute("transform","translate(0 -450)");
 		setTimeout(function(){
 			tune.volume=0.4;
-			//tune.play();
+			tune.play();
 			light.setAttribute("r","90");
 			torchlight.setAttribute("r","100");
 			ray.setAttribute("stroke-width","150");
@@ -170,6 +175,7 @@ body{
 						start.setAttribute("transform","translate(450 -450)");
 						setTimeout(function(){
 							start_move();
+							create_monsters();
 						},500);
 					},1000);
 			},1000);
@@ -267,36 +273,35 @@ body{
 		return Math.sqrt(xs+ys);
 	};
 
-	var max=10;
+	var max=3;
 	function create_monsters(){
-		//new Audio("appear.mp3").play();
+		new Audio("appear.mp3").play();
 		for(var i=0;i<max;i++){
-			xm=Math.round(((Math.random()*850)));
-			ym=Math.round(((Math.random()*850)));
-				while(Math.getDistance(x-25,y-25,xm,ym)<25){
-					x=Math.round(((Math.random()*92)));y=Math.round(((Math.random()*92)));
-				}
-			g2=document.createElementNS(svg1.namespaceURI,"g");
-			if(x<10){xm="0"+xm};if(ym<10){ym="0"+ym};
-			g2.setAttribute("transform","translate("+xm+" "+ym+")");
-			g2.setAttribute("class","spider");
-			g2.setAttribute("id","idm_"+i);
-			monster=document.createElementNS(svg1.namespaceURI,"image");
-			monster.setAttributeNS("http://www.w3.org/1999/xlink","href","monster.gif");
-			monster.setAttribute("x",-4);
-			monster.setAttribute("y",-4);
-			p1={x:x,y:y};
-			mp2={x:x+4,y:y+4};
-			monster.setAttribute("transform","rotate("+Math.round(Math.atan2(mp2.y-p1.y,mp2.x-p1.x)*180/Math.PI)+" 0 0)");
-			monster.setAttribute("width",150);
-			monster.setAttribute("height",150);
-			monster.setAttribute("opacity",1);
-			monster.setAttribute("id","img_"+i);
-			monster_area.appendChild(g2);
-			g2.appendChild(monster);
+				xm=Math.round(((Math.random()*900)));
+				ym=Math.round(((Math.random()*900)));
+					while(Math.getDistance(x,y,xm,ym)<300){
+						xm=Math.round(((Math.random()*900)));ym=Math.round(((Math.random()*900)));
+					}
+				g=document.createElementNS(svg1.namespaceURI,"g");
+				if(x<10){xm="0"+xm};if(ym<10){ym="0"+ym};
+				g.setAttribute("transform","translate("+xm+" "+ym+")");
+				g.setAttribute("class","spider");
+				g.setAttribute("id","idm_"+i);
+				monster=document.createElementNS(svg1.namespaceURI,"image");
+				monster.setAttributeNS("http://www.w3.org/1999/xlink","href","monster.gif");
+				monster.setAttribute("x",-50);
+				monster.setAttribute("y",-50);
+				p1={x:x,y:y};
+				mp2={x:xm+100,y:ym+100};
+				monster.setAttribute("transform","rotate("+Math.round(Math.atan2(mp2.y-p1.y,mp2.x-p1.x)*180/Math.PI)+" 0 0)");
+				monster.setAttribute("width",100);
+				monster.setAttribute("height",100);
+				monster.setAttribute("opacity",1);
+				monster.setAttribute("id","img_"+i);
+				monster_area.appendChild(g);
+				g.appendChild(monster);
 		}
 	}
-	create_monsters();
 </script>
 </body>
 </html>
