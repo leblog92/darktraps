@@ -1,93 +1,118 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<title>Dark Traps</title>
-<style>
-	html,body{
-	height:100%;
-	margin:0;
-	}
-	body{
-		background: linear-gradient(135deg, rgba(0,0,0,1), rgba(0,0,0,0.8), rgba(0,0,0,1)), url("floor.png");
-		font-family:Consolas;
-		text-align:center;
-	}
-	.main {
-		height:100%;
-		width:100%;
-		display:table;
-	}
-	.wrapper {
-		display:table-cell;
-		height:100%;
-		vertical-align: middle;
-	}
-	#div1{
-		background:rgba(255,255,255,0.25);
-		text-align:left;
-		position:fixed;
-		top:8px;
-		left:8px;
-		padding:8px;
-		user-select:none;
-		border-radius:8px;
-	}
-	#div2{
-		background:rgba(255,255,255,0.25);
-		text-align:right;
-		position:fixed;
-		top:8px;
-		right:8px;
-		padding:8px;
-		user-select:none;
-		border-radius:8px;
-	}
-	#div3{
-		background:rgba(255,255,255,0.25);
-		text-align:right;
-		position:fixed;
-		bottom:8px;
-		right:8px;
-		padding:8px;
-		user-select:none;
-		border-radius:8px;
-	}
-	#svg1{
-		width:900px;
-		height:900px;
-		box-shadow:10px 10px 20px rgba(0,0,0,0.5);
-		cursor:crosshair;
-	}
-	#doorL,#doorR{
-		transition:6s;
-	}
-	#scale1{
-		transition:3s;
-	}
-	#light{
-		transition:3s;
-	}
-	#torchlight{
-		transition:r 3s;
-	}
-	#ray{
-		transition:stroke-width 3s;
-	}
-	#title{
-		transition:6s;
-	}
-	#start{
-		transition:1s;
-	}
-	g[id^="idm_"]{
-	transition:300ms;
-	}
-	g[id^="img_"]{
-	transition:linear 400ms;
-	}
-</style>
+	<meta charset="utf-8">
+	<title>Dark Traps</title>
+	<style>
+		html,body{
+			height:100%;
+			margin:0;
+		}
+
+		body{
+			background: linear-gradient(135deg, rgba(0,0,0,1), rgba(0,0,0,0.8), rgba(0,0,0,1)), url("floor.png");
+			font-family:Consolas;
+			text-align:center;
+		}
+
+		.main {
+			height:100%;
+			width:100%;
+			display:table;
+		}
+
+		.wrapper {
+			display:table-cell;
+			height:100%;
+			vertical-align: middle;
+		}
+
+		.center{
+			dominant-baseline:middle;
+			text-anchor:middle;
+		}
+
+		#div1{
+			background:rgba(255,255,255,0.25);
+			text-align:left;
+			position:fixed;
+			top:8px;
+			left:8px;
+			padding:8px;
+			user-select:none;
+			border-radius:8px;
+		}
+
+		#div2{
+			background:rgba(255,255,255,0.25);
+			text-align:right;
+			position:fixed;
+			top:8px;
+			right:8px;
+			padding:8px;
+			user-select:none;
+			border-radius:8px;
+		}
+
+		#div3{
+			background:rgba(255,255,255,0.25);
+			text-align:right;
+			position:fixed;
+			bottom:8px;
+			right:8px;
+			padding:8px;
+			user-select:none;
+			border-radius:8px;
+		}
+
+		#svg1{
+			width:900px;
+			height:900px;
+			box-shadow:10px 10px 20px rgba(0,0,0,0.5);
+			cursor:crosshair;
+		}
+
+		#doorL,#doorR{
+			transition:6s;
+		}
+		#text_start{
+			transition:6s;
+		}
+		#title{
+			transition:6s;
+		}
+
+		#scale1{
+			transition:3s;
+		}
+
+		#light{
+			transition:3s;
+		}
+
+		#torchlight{
+			transition:r 3s;
+		}
+
+		#ray{
+			transition:stroke-width 3s;
+		}
+
+		#start{
+			transition:1s;
+		}
+
+		g[id^="idm_"]{
+			transition:300ms;
+		}
+
+		g[id^="img_"]{
+			transition:linear 400ms;
+		}
+
+	</style>
 </head>
+
 <body>
 <audio id="step">
 	<source src="step.mp3" type="audio/mpeg">
@@ -142,6 +167,7 @@
 			<image x="-450" y="-450" width="900" height="900" xlink:href="arch.png" id="arch"/>
 			<image x="-450" y="-450" width="900" height="900" xlink:href="shade.png" id="shade"/>
 			<image x="-450" y="-450" width="900" height="900" xlink:href="title.png" id="title" opacity="0.5"/>
+			<text  x="0000" y="0300" fill="white" font-size="60" class="center" id="text_start">START</text>
 			<image x="-450" y="-450" width="900" height="900" xlink:href="fog.png" id="fog" opacity="0.4"/>
 	</g>
 </g>
@@ -160,8 +186,7 @@
 	var start=document.getElementById("start");
 	var doorL=document.getElementById("doorL");
 	var doorR=document.getElementById("doorR");
-	var arch=document.getElementById("arch");
-	var shade=document.getElementById("shade");
+	var text_start=document.getElementById("text_start");
 	var scale1=document.getElementById("scale1");
 	var player=document.getElementById("player");
 	var position_light=document.getElementById("position_light");
@@ -176,12 +201,12 @@
 	var bound=svg1.getBoundingClientRect();
 	var bound_left=Math.round(bound.left);
 	var bound_top=Math.round(bound.top);
+	var x=450;
+	var y=850;
 	var mx=450;
 	var my=850;
 	var nok=0;
 	var bullet_speed=0.6;
-	var x=450;
-	var y=850;
 
 	document.addEventListener("click",open);
 
@@ -191,6 +216,7 @@
 		doorL.setAttribute("transform","translate(-450 0)");
 		doorR.setAttribute("transform","translate(450 0)");
 		title.setAttribute("transform","translate(0 -450)");
+		text_start.setAttribute("transform","translate(0 -900)");
 		setTimeout(function(){
 			tune.volume=0.4;
 			tune.play();
@@ -206,7 +232,7 @@
 						setTimeout(function(){
 							start_move();
 							create_monsters();
-							move_all=setInterval(move_monster,20);
+							var move_all=setInterval(move_monster,20);
 							svg1.addEventListener("mouseup",fire);
 						},500);
 					},1000);
@@ -251,16 +277,16 @@
 			velX *= friction;
 			x += Math.round(velX);
 
-			if (x >= 850) {
-				x = 850;
-			} else if (x <= 50) {
-				x = 50;
+			if (x>=850) {
+				x=850;
+			} else if (x<=50) {
+				x=50;
 			}
 
-			if (y > 850) {
-				y = 850;
-			} else if (y <= 50) {
-				y = 50;
+			if (y>= 850) {
+				y=850;
+			} else if (y<=50) {
+				y=50;
 			}
 
 			player.setAttribute("transform","translate("+x+","+y+")");
@@ -355,7 +381,7 @@
 		bullet=document.createElementNS("http://www.w3.org/2000/svg","circle");
 		bullet.setAttribute("cx",p1.x);
 		bullet.setAttribute("cy",p1.y);
-		bullet.setAttribute("r","4");
+		bullet.setAttribute("r","3");
 		bullet.setAttribute("fill","darkorange");
 		bullet.setAttribute("style","transition:linear "+bullet_speed*dist+"ms;");
 		svg1.appendChild(bullet);
@@ -372,7 +398,9 @@
 			if(sy>p1.y){sy--;}
 			if(sx>10&&sx<100){sx="0"+parseInt(sx);}else if(sx<10&&sx<100){sx="00"+parseInt(sx);}
 			if(sy>10&&sy<100){sy="0"+parseInt(sy);}else if(sy<10&&sy<100){sy="00"+parseInt(sy);}
-			if(sx==p1.x&&sy==p1.y){damage();}
+			//if(sx==p1.x&&sy==p1.y){damage();}
+			if(Math.getDistance(p1.x,p1.y,sx,sy)<50){damage();}
+			
 			mp2.x=sx;mp2.y=sy;
 			document.getElementsByClassName('spider')[i].childNodes[0].setAttribute("transform","rotate("+Math.round(Math.atan2(mp2.y-p1.y,mp2.x-p1.x)*180/Math.PI)+" 0 0)");
 			document.getElementsByClassName('spider')[i].setAttribute("transform","translate("+sx+" "+sy+")");
