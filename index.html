@@ -127,7 +127,7 @@
 	</g>
 </g>
 
-<rect x="0" y="0" width="900" height="900" fill="#000" opacity="0.5" style="mask:url(#hide)"/>
+<rect x="0" y="0" width="900" height="900" fill="#000" opacity="1" style="mask:url(#hide)"/>
 
 <g id="monster_area"></g>
 
@@ -179,9 +179,9 @@
 	var mx=450;
 	var my=850;
 	var nok=0;
-	var bullet_speed=0.8;
-	x=450;
-	y=850;
+	var bullet_speed=0.6;
+	var x=450;
+	var y=850;
 
 	document.addEventListener("click",open);
 
@@ -206,7 +206,7 @@
 						setTimeout(function(){
 							start_move();
 							create_monsters();
-							move_all=setInterval(move_monster,40);
+							move_all=setInterval(move_monster,20);
 							svg1.addEventListener("mouseup",fire);
 						},500);
 					},1000);
@@ -215,9 +215,7 @@
 	}
 
 	function start_move(){
-		var x=450,
-			y=850,
-			velY=0,
+		var velY=0,
 			velX=0,
 			speed=4,
 			friction=0.9,
@@ -309,14 +307,15 @@
 	function create_monsters(){
 		new Audio("appear.mp3").play();
 		for(var i=0;i<max;i++){
-			xm=Math.round(((Math.random()*900)));
-			ym=Math.round(((Math.random()*900)));
+			xm=Math.round(Math.random()*850)+50;
+			ym=Math.round(Math.random()*850)+50;
 				while(Math.getDistance(p1.x,p1.y,xm,ym)<300){
-					xm=Math.round(((Math.random()*900)));ym=Math.round(((Math.random()*900)));
+					xm=Math.round(Math.random()*850)+50;
+					ym=Math.round(Math.random()*850)+50;
 				}
 			g=document.createElementNS(svg1.namespaceURI,"g");
-			if(xm<10&&xm<100){xm="00"+xm};if(ym<10&&ym<100){ym="00"+ym};
-			if(xm>10&&xm<100){xm="0"+xm};if(ym>10&&ym<100){ym="0"+ym};
+			if(xm<10&&xm<100){xm="00"+xm;}if(ym<10&&ym<100){ym="00"+ym;}
+			if(xm>10&&xm<100){xm="0"+xm;}if(ym>10&&ym<100){ym="0"+ym;}
 			g.setAttribute("transform","translate("+xm+" "+ym+")");
 			g.setAttribute("class","spider");
 			g.setAttribute("id","idm_"+i);
@@ -338,7 +337,7 @@
 	}
 	
 	function fire(){
-	create_bullet();
+		create_bullet();
 		new Audio("shoot.mp3").play();
 		setTimeout(function(){
 			bullet.setAttribute("cx",mx);
@@ -356,8 +355,8 @@
 		bullet=document.createElementNS("http://www.w3.org/2000/svg","circle");
 		bullet.setAttribute("cx",p1.x);
 		bullet.setAttribute("cy",p1.y);
-		bullet.setAttribute("r","5");
-		bullet.setAttribute("fill","black");
+		bullet.setAttribute("r","4");
+		bullet.setAttribute("fill","darkorange");
 		bullet.setAttribute("style","transition:linear "+bullet_speed*dist+"ms;");
 		svg1.appendChild(bullet);
 	}
