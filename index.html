@@ -33,6 +33,26 @@
 		user-select:none;
 		border-radius:8px;
 	}
+	#div2{
+		background:rgba(255,255,255,0.25);
+		text-align:right;
+		position:fixed;
+		top:8px;
+		right:8px;
+		padding:8px;
+		user-select:none;
+		border-radius:8px;
+	}
+	#div3{
+		background:rgba(255,255,255,0.25);
+		text-align:right;
+		position:fixed;
+		bottom:8px;
+		right:8px;
+		padding:8px;
+		user-select:none;
+		border-radius:8px;
+	}
 	#svg1{
 		width:900px;
 		height:900px;
@@ -60,8 +80,11 @@
 	#start{
 		transition:1s;
 	}
+	g[id^="idm_"]{
+	transition:300ms;
+	}
 	g[id^="img_"]{
-		transition:opacity linear 400ms 1s;
+	transition:linear 400ms;
 	}
 </style>
 </head>
@@ -73,6 +96,8 @@
 	<source src="tune1.mp3" type="audio/mpeg">
 </audio>
 <div id="div1">DARK TRAPS</div>
+<div id="div2">❤️ life: 100</div>
+<div id="div3">☠️ kills: 0</div>
 <div class="main">
 <div class="wrapper">
 <svg id="svg1" viewBox="0 0 900 900">
@@ -102,7 +127,7 @@
 	</g>
 </g>
 
-<rect x="0" y="0" width="900" height="900" fill="#000" opacity="1" style="mask:url(#hide)"/>
+<rect x="0" y="0" width="900" height="900" fill="#000" opacity="0.5" style="mask:url(#hide)"/>
 
 <g id="monster_area"></g>
 
@@ -125,9 +150,12 @@
 </div>
 
 <script>
+	/*jshint esversion: 6 */
 	var ww=window.innerWidth;
 	var wh=window.innerHeight;
 	var div1=document.getElementById("div1");
+	var div2=document.getElementById("div2");
+	var div3=document.getElementById("div3");
 	var svg1=document.getElementById("svg1");
 	var start=document.getElementById("start");
 	var doorL=document.getElementById("doorL");
@@ -150,6 +178,8 @@
 	var bound_top=Math.round(bound.top);
 	var mx=450;
 	var my=850;
+	var nok=0;
+	var bullet_speed=0.8;
 	x=450;
 	y=850;
 
@@ -176,6 +206,8 @@
 						setTimeout(function(){
 							start_move();
 							create_monsters();
+							move_all=setInterval(move_monster,40);
+							svg1.addEventListener("mouseup",fire);
 						},500);
 					},1000);
 			},1000);
@@ -277,30 +309,95 @@
 	function create_monsters(){
 		new Audio("appear.mp3").play();
 		for(var i=0;i<max;i++){
-				xm=Math.round(((Math.random()*900)));
-				ym=Math.round(((Math.random()*900)));
-					while(Math.getDistance(x,y,xm,ym)<300){
-						xm=Math.round(((Math.random()*900)));ym=Math.round(((Math.random()*900)));
-					}
-				g=document.createElementNS(svg1.namespaceURI,"g");
-				if(x<10){xm="0"+xm};if(ym<10){ym="0"+ym};
-				g.setAttribute("transform","translate("+xm+" "+ym+")");
-				g.setAttribute("class","spider");
-				g.setAttribute("id","idm_"+i);
-				monster=document.createElementNS(svg1.namespaceURI,"image");
-				monster.setAttributeNS("http://www.w3.org/1999/xlink","href","monster.gif");
-				monster.setAttribute("x",-50);
-				monster.setAttribute("y",-50);
-				p1={x:x,y:y};
-				mp2={x:xm+100,y:ym+100};
-				monster.setAttribute("transform","rotate("+Math.round(Math.atan2(mp2.y-p1.y,mp2.x-p1.x)*180/Math.PI)+" 0 0)");
-				monster.setAttribute("width",100);
-				monster.setAttribute("height",100);
-				monster.setAttribute("opacity",1);
-				monster.setAttribute("id","img_"+i);
-				monster_area.appendChild(g);
-				g.appendChild(monster);
+			xm=Math.round(((Math.random()*900)));
+			ym=Math.round(((Math.random()*900)));
+				while(Math.getDistance(p1.x,p1.y,xm,ym)<300){
+					xm=Math.round(((Math.random()*900)));ym=Math.round(((Math.random()*900)));
+				}
+			g=document.createElementNS(svg1.namespaceURI,"g");
+			if(xm<10&&xm<100){xm="00"+xm};if(ym<10&&ym<100){ym="00"+ym};
+			if(xm>10&&xm<100){xm="0"+xm};if(ym>10&&ym<100){ym="0"+ym};
+			g.setAttribute("transform","translate("+xm+" "+ym+")");
+			g.setAttribute("class","spider");
+			g.setAttribute("id","idm_"+i);
+			monster=document.createElementNS(svg1.namespaceURI,"image");
+			monster.setAttributeNS("http://www.w3.org/1999/xlink","href","monster.gif");
+			monster.setAttribute("x",-50);
+			monster.setAttribute("y",-50);
+			p1={x:x,y:y};
+			mp2={x:xm+100,y:ym+100};
+			monster.setAttribute("transform","rotate("+Math.round(Math.atan2(mp2.y-p1.y,mp2.x-p1.x)*180/Math.PI)+" 0 0)");
+			monster.setAttribute("width",100);
+			monster.setAttribute("height",100);
+			monster.setAttribute("opacity",1);
+			monster.setAttribute("id","img_"+i);
+			monster_area.appendChild(g);
+			g.appendChild(monster);
+			monster.addEventListener('click',event=>{kill(event);});
 		}
+	}
+	
+	function fire(){
+	create_bullet();
+		new Audio("shoot.mp3").play();
+		setTimeout(function(){
+			bullet.setAttribute("cx",mx);
+			bullet.setAttribute("cy",my);
+			bullet.setAttribute("id","bull");
+			setTimeout(function(){
+				svg1.removeChild(bullet);
+				svg1.addEventListener("mouseup",fire);
+				},((bullet_speed*dist)+50));
+		},50);
+	}
+
+	function create_bullet(){
+		svg1.removeEventListener("mouseup",fire);
+		bullet=document.createElementNS("http://www.w3.org/2000/svg","circle");
+		bullet.setAttribute("cx",p1.x);
+		bullet.setAttribute("cy",p1.y);
+		bullet.setAttribute("r","5");
+		bullet.setAttribute("fill","black");
+		bullet.setAttribute("style","transition:linear "+bullet_speed*dist+"ms;");
+		svg1.appendChild(bullet);
+	}
+
+	function move_monster(){
+		for(var i=0;i<document.getElementsByClassName('spider').length;i++){
+			var data_monster=document.getElementsByClassName('spider')[i].getAttribute("transform");
+			sx=data_monster.substr(10,3);
+			sy=data_monster.substr(14,3);
+			if(sx<p1.x){sx++;}
+			if(sx>p1.x){sx--;}
+			if(sy<p1.y){sy++;}
+			if(sy>p1.y){sy--;}
+			if(sx>10&&sx<100){sx="0"+parseInt(sx);}else if(sx<10&&sx<100){sx="00"+parseInt(sx);}
+			if(sy>10&&sy<100){sy="0"+parseInt(sy);}else if(sy<10&&sy<100){sy="00"+parseInt(sy);}
+			if(sx==p1.x&&sy==p1.y){damage();}
+			mp2.x=sx;mp2.y=sy;
+			document.getElementsByClassName('spider')[i].childNodes[0].setAttribute("transform","rotate("+Math.round(Math.atan2(mp2.y-p1.y,mp2.x-p1.x)*180/Math.PI)+" 0 0)");
+			document.getElementsByClassName('spider')[i].setAttribute("transform","translate("+sx+" "+sy+")");
+		}
+	}
+	
+	var life=100;
+	function damage(){
+		life--;
+		div2.innerHTML="❤️ life: "+life;
+	}
+	
+	function kill(event){
+		setTimeout(function(){
+			new Audio("death.mp3").play();
+			event.target.setAttributeNS("http://www.w3.org/1999/xlink","href","monster2.png");
+			event.target.setAttribute("opacity","0.5");
+			setTimeout(function(){event.target.parentNode.remove();nok++;
+				div3.innerHTML="☠️ kills: "+nok;
+				if(document.getElementsByClassName('spider').length==0){		
+					max++;create_monsters();
+				}
+			},250);
+		},((bullet_speed*dist)+50));
 	}
 </script>
 </body>
