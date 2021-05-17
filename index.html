@@ -281,10 +281,10 @@
 			if (keys[68]){if(velX<speed){velX++;}}
 			if (keys[81]){if(velX> -speed){velX--;}}
 
-			velY *= friction;
-			y += Math.round(velY);
-			velX *= friction;
-			x += Math.round(velX);
+			velY*=friction;
+			y+=Math.round(velY);
+			velX*=friction;
+			x+=Math.round(velX);
 
 			if(x>=850){x=850;}else if(x<=50){x=50;}
 
