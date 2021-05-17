@@ -213,6 +213,7 @@
 	var tune=document.getElementById("tune");
 	var bite=document.getElementById("bite");
 	var title=document.getElementById("title");
+	var g_saw=document.getElementById("g_saw");
 	var monster_area=document.getElementById("monster_area");
 	var bound=svg1.getBoundingClientRect();
 	var bound_left=Math.round(bound.left);
@@ -231,10 +232,10 @@
 	var room=1;
 	var max=1;
 
-	document.addEventListener("click",open);
+	svg1.addEventListener("click",open);
 
 	function open(){
-		document.removeEventListener("click",open);
+		svg1.removeEventListener("click",open);
 		new Audio("insect_death.mp3").play();
 		new Audio("open.mp3").play();
 		doorL.setAttribute("transform","translate(-450 0)");
@@ -486,7 +487,7 @@
 	}
 	
 	function create_saw(){
-		g_saw=document.createElement(svg1.namespaceURI,"g");
+		g_saw=document.createElementNS(svg1.namespaceURI,"g");
 		g_saw.setAttribute("x","0");
 		saw_random_y=Math.round(Math.random()*700);
 		g_saw.setAttribute("y",saw_random_y);
@@ -499,6 +500,19 @@
 		saw.setAttribute("y","-50");
 		g_saw.appendChild(saw);
 	}
+	
+		g_saw=document.createElementNS(svg1.namespaceURI,"g");
+		g_saw.setAttribute("x","0");
+		saw_random_y=Math.round(Math.random()*700);
+		g_saw.setAttribute("y",saw_random_y);
+		hole_area.appendChild(g_saw);
+		saw=document.createElementNS(svg1.namespaceURI,"image");
+		saw.setAttributeNS("http://www.w3.org/1999/xlink","href","saw.png");
+		saw.setAttribute("width","100");
+		saw.setAttribute("height","100");
+		saw.setAttribute("x","-50");
+		saw.setAttribute("y","-50");
+		g_saw.appendChild(saw);
 </script>
 </body>
 </html>
