@@ -225,7 +225,7 @@
 	var bullet_speed=0.7;
 	var invulnerable=false;
 	var exit1011=false;
-	var amno=480;
+	var amno=100;
 	var room_max_kills=10;
 	var killed_in_room=0;
 	var room=1;
@@ -235,6 +235,7 @@
 
 	function open(){
 		document.removeEventListener("click",open);
+		new Audio("insect_death.mp3").play();
 		new Audio("open.mp3").play();
 		doorL.setAttribute("transform","translate(-450 0)");
 		doorR.setAttribute("transform","translate(450 0)");
@@ -274,44 +275,19 @@
 		function update(){
 			requestAnimationFrame(update);
 
-			if (keys[90]) {
-				if (velY > -speed) {
-					velY--;
-				}
-			}
-			
-			if (keys[83]) {
-				if (velY < speed) {
-					velY++;
-				}
-			}
-			if (keys[68]) {
-				if (velX < speed) {
-					velX++;
-				}
-			}
-			if (keys[81]) {
-				if (velX > -speed) {
-					velX--;
-				}
-			}
+			if (keys[90]){if(velY> -speed){velY--;}}
+			if (keys[83]){if(velY<speed){velY++;}}
+			if (keys[68]){if(velX<speed){velX++;}}
+			if (keys[81]){if(velX> -speed){velX--;}}
 
 			velY *= friction;
 			y += Math.round(velY);
 			velX *= friction;
 			x += Math.round(velX);
 
-			if (x>=850) {
-				x=850;
-			} else if (x<=50) {
-				x=50;
-			}
+			if(x>=850){x=850;}else if(x<=50){x=50;}
 
-			if (y>= 850) {
-				y=850;
-			} else if (y<=50) {
-				y=50;
-			}
+			if(y>= 850){y=850;}else if(y<=50){y=50;}
 
 			player.setAttribute("transform","translate("+x+","+y+")");
 			position_light.setAttribute("transform","translate("+x+","+y+")");
@@ -320,7 +296,7 @@
 			p2={x:mx,y:my};
 			angleDeg=Math.round(Math.atan2(p2.y-p1.y,p2.x-p1.x)*180/Math.PI);
 			rotate1.setAttribute("transform","rotate("+angleDeg+" 0 0)");
-			dist=Math.round(Math.getDistance(x,y,mx,my));
+			dist=Math.round(Math.getDistance(p1.x,p1.y,mx,my));
 			div1.innerHTML="DARK TRAPS<br>window width: "+ww+"px height: "+wh+"px<br>player x: "+x+" y: "+y+"<br>mouse x: "+mx+" y: "+my+"<br>angle: "+angleDeg+"°<br>bounding left: "+bound_left+"px top: "+bound_top+"px<br>distance: "+dist+"px<br>room number: "+room+"<br>amno: "+amno;
 			if(exit1011==true&&(Math.getDistance(x,y,450,0))<75){exit1011=false;next_room();}
 		}
@@ -335,7 +311,6 @@
 		document.body.addEventListener("keyup",function(e){
 			keys[e.keyCode]=false;
 		});
-
 	}
 
 	function showCoords(event){
@@ -363,14 +338,14 @@
 					xm=Math.round(Math.random()*850)+50;
 					ym=Math.round(Math.random()*850)+50;
 				}
-			g=document.createElementNS(svg1.namespaceURI,"g");
+			var g=document.createElementNS(svg1.namespaceURI,"g");
 			if(xm<10&&xm<100){xm="00"+xm;}if(ym<10&&ym<100){ym="00"+ym;}
 			if(xm>10&&xm<100){xm="0"+xm;}if(ym>10&&ym<100){ym="0"+ym;}
 			g.setAttribute("transform","translate("+xm+" "+ym+")");
 			g.setAttribute("class","spider");
 			g.setAttribute("id","idm_"+i);
-			monster=document.createElementNS(svg1.namespaceURI,"image");
-			if(Math.round(Math.random()*5)==0){
+			var monster=document.createElementNS(svg1.namespaceURI,"image");
+			if(Math.round(Math.random()*4)==0){
 				monster.setAttributeNS("http://www.w3.org/1999/xlink","href","blind.gif");
 			}else{
 				monster.setAttributeNS("http://www.w3.org/1999/xlink","href","monster.gif");
@@ -491,6 +466,7 @@
 				setTimeout(function(){
 					if(room>=3){
 						new Audio("saw.mp3").play();
+						create_saw();
 					}
 				},1000);
 			},2000);
@@ -507,6 +483,21 @@
 		hole.setAttribute("x",random_x);
 		hole.setAttribute("y",Math.round(Math.random()*700));
 		hole_area.appendChild(hole);
+	}
+	
+	function create_saw(){
+		g_saw=document.createElement(svg1.namespaceURI,"g");
+		g_saw.setAttribute("x","0");
+		saw_random_y=Math.round(Math.random()*700);
+		g_saw.setAttribute("y",saw_random_y);
+		hole_area.appendChild(g_saw);
+		saw=document.createElementNS(svg1.namespaceURI,"image");
+		saw.setAttributeNS("http://www.w3.org/1999/xlink","href","saw.png");
+		saw.setAttribute("width","100");
+		saw.setAttribute("height","100");
+		saw.setAttribute("x","-50");
+		saw.setAttribute("y","-50");
+		g_saw.appendChild(saw);
 	}
 </script>
 </body>
