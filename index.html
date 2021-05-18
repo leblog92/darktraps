@@ -231,6 +231,7 @@
 	var killed_in_room=0;
 	var room=1;
 	var max=1;
+	var life=100;
 
 	svg1.addEventListener("click",open);
 
@@ -298,6 +299,8 @@
 			angleDeg=Math.round(Math.atan2(p2.y-p1.y,p2.x-p1.x)*180/Math.PI);
 			rotate1.setAttribute("transform","rotate("+angleDeg+" 0 0)");
 			dist=Math.round(Math.getDistance(p1.x,p1.y,mx,my));
+			saw_x++;g_saw.setAttribute("transform","translate("+saw_x+" "+saw_y+")");
+			if(Math.getDistance(p1.x,p1.y,saw_x,saw_y)<90){damage();new Audio("saw_impact.mp3").play();}
 			div1.innerHTML="DARK TRAPS<br>window width: "+ww+"px height: "+wh+"px<br>player x: "+x+" y: "+y+"<br>mouse x: "+mx+" y: "+my+"<br>angle: "+angleDeg+"°<br>bounding left: "+bound_left+"px top: "+bound_top+"px<br>distance: "+dist+"px<br>room number: "+room+"<br>amno: "+amno;
 			if(exit1011==true&&(Math.getDistance(x,y,450,0))<75){exit1011=false;next_room();}
 		}
@@ -346,7 +349,7 @@
 			g.setAttribute("class","spider");
 			g.setAttribute("id","idm_"+i);
 			var monster=document.createElementNS(svg1.namespaceURI,"image");
-			if(Math.round(Math.random()*4)==0){
+			if(Math.round(Math.random()*3)==0){
 				monster.setAttributeNS("http://www.w3.org/1999/xlink","href","blind.gif");
 			}else{
 				monster.setAttributeNS("http://www.w3.org/1999/xlink","href","monster.gif");
@@ -405,20 +408,19 @@
 			if(sy>p1.y){sy--;}
 			if(sx>10&&sx<100){sx="0"+parseInt(sx);}else if(sx<10&&sx<100){sx="00"+parseInt(sx);}
 			if(sy>10&&sy<100){sy="0"+parseInt(sy);}else if(sy<10&&sy<100){sy="00"+parseInt(sy);}
-			if(Math.getDistance(p1.x,p1.y,sx,sy)<50){damage();}
+			if(Math.getDistance(p1.x,p1.y,sx,sy)<50){damage();bite.play();}
 			mp2.x=sx;mp2.y=sy;
 			document.getElementsByClassName('spider')[i].childNodes[0].setAttribute("transform","rotate("+Math.round(Math.atan2(mp2.y-p1.y,mp2.x-p1.x)*180/Math.PI)+" 0 0)");
 			document.getElementsByClassName('spider')[i].setAttribute("transform","translate("+sx+" "+sy+")");
 		}
 	}
 	
-	var life=100;
 	function damage(){
 		if(invulnerable==false){
 			invulnerable=true;
 			player.setAttribute("filter","hue-rotate(180deg)");
 			life=life-10;
-			bite.play();
+			new Audio("pain.mp3").play();
 			div2.innerHTML="❤️ life: "+life;
 			setTimeout(function(){
 				invulnerable=false;
@@ -428,31 +430,33 @@
 	}
 	
 	function kill(event){
-		event.target.setAttribute("style","pointer-events:none;");
-		setTimeout(function(){
-			new Audio("insect_death.mp3").play();
-			event.target.setAttributeNS("http://www.w3.org/1999/xlink","href","splash.gif");
-			event.target.setAttribute("opacity","0.5");
-			setTimeout(function(){event.target.parentNode.remove();nok++;killed_in_room++;
-				div3.innerHTML="☠️ kills: "+nok;
-				if(document.getElementsByClassName('spider').length==0){	
-					if(killed_in_room<room_max_kills){
-					max++;create_monsters();
-					}else{
-						new Audio("slab.mp3").play();
-						open_door=document.createElementNS(svg1.namespaceURI,"image");
-						open_door.setAttributeNS("http://www.w3.org/1999/xlink","href","1011light.png");
-						hide.appendChild(open_door);
-						walls.setAttributeNS("http://www.w3.org/1999/xlink","href","1011.png");
-						exit1011=true;						
+		if(amno>0){
+			event.target.setAttribute("style","pointer-events:none;");
+			setTimeout(function(){
+				new Audio("insect_death.mp3").play();
+				event.target.setAttributeNS("http://www.w3.org/1999/xlink","href","splash.gif");
+				event.target.setAttribute("opacity","0.5");
+				setTimeout(function(){event.target.parentNode.remove();nok++;killed_in_room++;
+					div3.innerHTML="☠️ kills: "+nok;
+					if(document.getElementsByClassName('spider').length==0){	
+						if(killed_in_room<room_max_kills){
+						max++;create_monsters();
+						}else{
+							new Audio("slab.mp3").play();
+							open_door=document.createElementNS(svg1.namespaceURI,"image");
+							open_door.setAttributeNS("http://www.w3.org/1999/xlink","href","1011light.png");
+							hide.appendChild(open_door);
+							walls.setAttributeNS("http://www.w3.org/1999/xlink","href","1011.png");
+							exit1011=true;						
+						}
 					}
-				}
-			},250);
-		},((bullet_speed*dist)+50));
+				},250);
+			},((bullet_speed*dist)+50));
+		}
 	}
 	
 	function next_room(){
-	room++;
+		room++;
 		new Audio("slab.mp3").play();
 		hide.removeChild(open_door);
 		walls.setAttributeNS("http://www.w3.org/1999/xlink","href","1111.png");
@@ -488,31 +492,58 @@
 	
 	function create_saw(){
 		g_saw=document.createElementNS(svg1.namespaceURI,"g");
-		g_saw.setAttribute("x","0");
-		saw_random_y=Math.round(Math.random()*700);
-		g_saw.setAttribute("y",saw_random_y);
+		saw_x=0;
+		saw_y=Math.round(Math.random()*800)+50;
+		g_saw.setAttribute("transform","translate("+saw_x+" "+saw_y+")");
 		hole_area.appendChild(g_saw);
+		g_rotate_saw=document.createElementNS(svg1.namespaceURI,"g");
+		g_rotate_saw.setAttribute("id","rotate_saw"+room);
+		g_saw.appendChild(g_rotate_saw);
 		saw=document.createElementNS(svg1.namespaceURI,"image");
 		saw.setAttributeNS("http://www.w3.org/1999/xlink","href","saw.png");
 		saw.setAttribute("width","100");
 		saw.setAttribute("height","100");
 		saw.setAttribute("x","-50");
 		saw.setAttribute("y","-50");
-		g_saw.appendChild(saw);
+		g_rotate_saw.appendChild(saw);
+		animate_rotate_saw=document.createElementNS(svg1.namespaceURI,"animateTransform");
+		animate_rotate_saw.setAttribute("attributeName","transform");
+		animate_rotate_saw.setAttribute("attributeType","xml");
+		animate_rotate_saw.setAttribute("type","rotate");
+		animate_rotate_saw.setAttribute("values","0 0 0; 360 0 0");
+		animate_rotate_saw.setAttribute("begin","0s");
+		animate_rotate_saw.setAttribute("dur","0.5s");
+		animate_rotate_saw.setAttribute("repeatCount","indefinite");
+		animate_rotate_saw.setAttributeNS("http://www.w3.org/1999/xlink","href","#rotate_saw"+room);
+		svg1.appendChild(animate_rotate_saw);
 	}
-	
-		g_saw=document.createElementNS(svg1.namespaceURI,"g");
-		g_saw.setAttribute("x","0");
-		saw_random_y=Math.round(Math.random()*700);
-		g_saw.setAttribute("y",saw_random_y);
-		hole_area.appendChild(g_saw);
-		saw=document.createElementNS(svg1.namespaceURI,"image");
-		saw.setAttributeNS("http://www.w3.org/1999/xlink","href","saw.png");
-		saw.setAttribute("width","100");
-		saw.setAttribute("height","100");
-		saw.setAttribute("x","-50");
-		saw.setAttribute("y","-50");
-		g_saw.appendChild(saw);
+
+	g_saw=document.createElementNS(svg1.namespaceURI,"g");
+	saw_x=0;
+	saw_y=Math.round(Math.random()*800)+50;
+	g_saw.setAttribute("transform","translate("+saw_x+" "+saw_y+")");
+	hole_area.appendChild(g_saw);
+	g_rotate_saw=document.createElementNS(svg1.namespaceURI,"g");
+	g_rotate_saw.setAttribute("id","rotate_saw"+room);
+	g_saw.appendChild(g_rotate_saw);
+	saw=document.createElementNS(svg1.namespaceURI,"image");
+	saw.setAttributeNS("http://www.w3.org/1999/xlink","href","saw.png");
+	saw.setAttribute("width","100");
+	saw.setAttribute("height","100");
+	saw.setAttribute("x","-50");
+	saw.setAttribute("y","-50");
+	g_rotate_saw.appendChild(saw);
+	animate_rotate_saw=document.createElementNS(svg1.namespaceURI,"animateTransform");
+	animate_rotate_saw.setAttribute("attributeName","transform");
+	animate_rotate_saw.setAttribute("attributeType","xml");
+	animate_rotate_saw.setAttribute("type","rotate");
+	animate_rotate_saw.setAttribute("values","0 0 0; 360 0 0");
+	animate_rotate_saw.setAttribute("begin","0s");
+	animate_rotate_saw.setAttribute("dur","0.5s");
+	animate_rotate_saw.setAttribute("repeatCount","indefinite");
+	animate_rotate_saw.setAttributeNS("http://www.w3.org/1999/xlink","href","#rotate_saw"+room);
+	svg1.appendChild(animate_rotate_saw);
+
 </script>
 </body>
 </html>
