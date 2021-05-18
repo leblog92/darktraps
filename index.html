@@ -178,7 +178,7 @@
 			<image x="-450" y="-450" width="900" height="900" xlink:href="arch.png" id="arch"/>
 			<image x="-450" y="-450" width="900" height="900" xlink:href="shade.png" id="shade"/>
 			<image x="-450" y="-450" width="900" height="900" xlink:href="title.png" id="title" opacity="0.5"/>
-			<text  x="0000" y="0300" fill="white" font-size="60" class="center" id="text_start">GAME START</text>
+			<g transform="translate(0 300)" id="text_start"><text  x="0" y="0" fill="white" font-size="60" class="center" id="text_start">GAME START</text></g>
 			<image x="-450" y="-450" width="900" height="900" xlink:href="fog.png" id="fog" opacity="0.4"/>
 	</g>
 </g>
@@ -242,7 +242,7 @@
 		doorL.setAttribute("transform","translate(-450 0)");
 		doorR.setAttribute("transform","translate(450 0)");
 		title.setAttribute("transform","translate(0 -450)");
-		text_start.setAttribute("transform","translate(0 300)");
+		text_start.setAttribute("transform","translate(0 600)");
 		setTimeout(function(){
 			tune.volume=0.4;
 			tune.play();
@@ -299,8 +299,14 @@
 			angleDeg=Math.round(Math.atan2(p2.y-p1.y,p2.x-p1.x)*180/Math.PI);
 			rotate1.setAttribute("transform","rotate("+angleDeg+" 0 0)");
 			dist=Math.round(Math.getDistance(p1.x,p1.y,mx,my));
-			saw_x++;g_saw.setAttribute("transform","translate("+saw_x+" "+saw_y+")");
-			if(Math.getDistance(p1.x,p1.y,saw_x,saw_y)<90){damage();new Audio("saw_impact.mp3").play();}
+			if(room>=3){
+				saw_x++;g_saw.setAttribute("transform","translate("+saw_x+" "+saw_y+")");
+				if(Math.getDistance(p1.x,p1.y,saw_x,saw_y)<90){
+					damage();
+					new Audio("saw_impact.mp3").play();
+				}
+			}
+			
 			div1.innerHTML="DARK TRAPS<br>window width: "+ww+"px height: "+wh+"px<br>player x: "+x+" y: "+y+"<br>mouse x: "+mx+" y: "+my+"<br>angle: "+angleDeg+"°<br>bounding left: "+bound_left+"px top: "+bound_top+"px<br>distance: "+dist+"px<br>room number: "+room+"<br>amno: "+amno;
 			if(exit1011==true&&(Math.getDistance(x,y,450,0))<75){exit1011=false;next_room();}
 		}
@@ -517,33 +523,6 @@
 		animate_rotate_saw.setAttributeNS("http://www.w3.org/1999/xlink","href","#rotate_saw"+room);
 		svg1.appendChild(animate_rotate_saw);
 	}
-
-	g_saw=document.createElementNS(svg1.namespaceURI,"g");
-	saw_x=0;
-	saw_y=Math.round(Math.random()*800)+50;
-	g_saw.setAttribute("transform","translate("+saw_x+" "+saw_y+")");
-	hole_area.appendChild(g_saw);
-	g_rotate_saw=document.createElementNS(svg1.namespaceURI,"g");
-	g_rotate_saw.setAttribute("id","rotate_saw"+room);
-	g_saw.appendChild(g_rotate_saw);
-	saw=document.createElementNS(svg1.namespaceURI,"image");
-	saw.setAttributeNS("http://www.w3.org/1999/xlink","href","saw.png");
-	saw.setAttribute("width","100");
-	saw.setAttribute("height","100");
-	saw.setAttribute("x","-50");
-	saw.setAttribute("y","-50");
-	g_rotate_saw.appendChild(saw);
-	animate_rotate_saw=document.createElementNS(svg1.namespaceURI,"animateTransform");
-	animate_rotate_saw.setAttribute("attributeName","transform");
-	animate_rotate_saw.setAttribute("attributeType","xml");
-	animate_rotate_saw.setAttribute("type","rotate");
-	animate_rotate_saw.setAttribute("values","0 0 0; 360 0 0");
-	animate_rotate_saw.setAttribute("begin","0s");
-	animate_rotate_saw.setAttribute("dur","0.5s");
-	animate_rotate_saw.setAttribute("repeatCount","indefinite");
-	animate_rotate_saw.setAttributeNS("http://www.w3.org/1999/xlink","href","#rotate_saw"+room);
-	svg1.appendChild(animate_rotate_saw);
-
 </script>
 </body>
 </html>
