@@ -48,6 +48,7 @@
 
 		#div2{
 			background:rgba(255,255,255,0.25);
+			color:crimson;
 			text-align:right;
 			position:fixed;
 			top:8px;
@@ -63,6 +64,17 @@
 			position:fixed;
 			bottom:8px;
 			right:8px;
+			padding:8px;
+			user-select:none;
+			border-radius:8px;
+		}
+
+		#div4{
+			background:rgba(255,255,255,0.25);
+			text-align:right;
+			position:fixed;
+			bottom:8px;
+			left:8px;
 			padding:8px;
 			user-select:none;
 			border-radius:8px;
@@ -128,8 +140,9 @@
 	<source src="bite.mp3" type="audio/mpeg">
 </audio>
 <div id="div1">DARK TRAPS</div>
-<div id="div2">❤️ life: 100</div>
+<div id="div2">❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️</div>
 <div id="div3">☠️ kills: 0</div>
+<div id="div4"></div>
 <div class="main">
 <div class="wrapper">
 <svg id="svg1" viewBox="0 0 900 900">
@@ -226,18 +239,19 @@
 	var bullet_speed=0.7;
 	var invulnerable=false;
 	var exit1011=false;
-	var amno=100;
+	var ammo=100;
 	var room_max_kills=10;
 	var killed_in_room=0;
 	var room=1;
 	var max=1;
 	var life=100;
+	var saw_go_right=true;
+	var saw_x=0;
 
 	svg1.addEventListener("click",open);
 
 	function open(){
 		svg1.removeEventListener("click",open);
-		new Audio("insect_death.mp3").play();
 		new Audio("open.mp3").play();
 		doorL.setAttribute("transform","translate(-450 0)");
 		doorR.setAttribute("transform","translate(450 0)");
@@ -253,6 +267,7 @@
 			setTimeout(function(){
 				start.setAttribute("opacity","0");
 					setTimeout(function(){
+						
 						scale1.setAttribute("transform","scale(1)");
 						start.setAttribute("transform","translate(450 -450)");
 						text_start.setAttribute("transform","translate(0 300)");
@@ -300,14 +315,27 @@
 			rotate1.setAttribute("transform","rotate("+angleDeg+" 0 0)");
 			dist=Math.round(Math.getDistance(p1.x,p1.y,mx,my));
 			if(room>=3){
-				saw_x++;g_saw.setAttribute("transform","translate("+saw_x+" "+saw_y+")");
+				if(saw_go_right==true){
+					saw_x=saw_x+5;
+					g_saw.setAttribute("transform","translate("+saw_x+" "+saw_y+")");
+					if(saw_x>900){
+						saw_go_right=false;
+					}
+				}else{
+					saw_x=saw_x-5;
+					g_saw.setAttribute("transform","translate("+saw_x+" "+saw_y+")");
+					if(saw_x<0){
+						saw_go_right=true;
+					}
+				}
+
 				if(Math.getDistance(p1.x,p1.y,saw_x,saw_y)<90){
 					damage();
 					new Audio("saw_impact.mp3").play();
 				}
 			}
 			
-			div1.innerHTML="DARK TRAPS<br>window width: "+ww+"px height: "+wh+"px<br>player x: "+x+" y: "+y+"<br>mouse x: "+mx+" y: "+my+"<br>angle: "+angleDeg+"°<br>bounding left: "+bound_left+"px top: "+bound_top+"px<br>distance: "+dist+"px<br>room number: "+room+"<br>amno: "+amno;
+			div1.innerHTML="DARK TRAPS<br>window width: "+ww+"px height: "+wh+"px<br>player x: "+x+" y: "+y+"<br>mouse x: "+mx+" y: "+my+"<br>angle: "+angleDeg+"°<br>bounding left: "+bound_left+"px top: "+bound_top+"px<br>distance: "+dist+"px<br>room number: "+room+"<br>ammo: "+ammo;
 			if(exit1011==true&&(Math.getDistance(x,y,450,0))<75){exit1011=false;next_room();}
 		}
 
@@ -356,9 +384,9 @@
 			g.setAttribute("id","idm_"+i);
 			var monster=document.createElementNS(svg1.namespaceURI,"image");
 			if(Math.round(Math.random()*3)==0){
-				monster.setAttributeNS("http://www.w3.org/1999/xlink","href","blind.gif");
+				monster.setAttributeNS("http://www.w3.org/1999/xlink","href","blind_spider.gif");
 			}else{
-				monster.setAttributeNS("http://www.w3.org/1999/xlink","href","monster.gif");
+				monster.setAttributeNS("http://www.w3.org/1999/xlink","href","spider.gif");
 			}
 			monster.setAttribute("x",-50);
 			monster.setAttribute("y",-50);
@@ -376,8 +404,8 @@
 	}
 	
 	function fire(){
-		if(amno>0){
-			amno--;
+		if(ammo>0){
+			ammo--;
 			create_bullet();
 			new Audio("shoot.mp3").play();
 			setTimeout(function(){
@@ -427,7 +455,10 @@
 			player.setAttribute("filter","hue-rotate(180deg)");
 			life=life-10;
 			new Audio("pain.mp3").play();
-			div2.innerHTML="❤️ life: "+life;
+			div2.innerHTML=""
+			for(var i=0;i<(life/10);i++){
+				div2.innerHTML+="❤️";
+			}
 			setTimeout(function(){
 				invulnerable=false;
 				player.setAttribute("filter","hue-rotate(0deg)");
@@ -436,7 +467,7 @@
 	}
 	
 	function kill(event){
-		if(amno>0){
+		if(ammo>0){
 			event.target.setAttribute("style","pointer-events:none;");
 			setTimeout(function(){
 				new Audio("insect_death.mp3").play();
@@ -475,14 +506,13 @@
 				create_monsters();
 				create_hole();
 				setTimeout(function(){
-					if(room>=3){
-						new Audio("saw.mp3").play();
-						create_saw();
-					}
+					if(room==3){create_saw();}
+					if(room>=3){new Audio("saw.mp3").play();}
 				},1000);
 			},2000);
 	}
 	
+	var h=0;
 	function create_hole(){
 	new Audio("crumble.mp3").play();
 		hole=document.createElementNS(svg1.namespaceURI,"image");
@@ -492,8 +522,12 @@
 		hole.setAttribute("width","200");
 		hole.setAttribute("height","200");
 		hole.setAttribute("x",random_x);
-		hole.setAttribute("y",Math.round(Math.random()*700));
+		random_y=Math.round(Math.random()*700);
+		while(random_y>160&&random_y<540){random_y=Math.round(Math.random()*700);}
+		hole.setAttribute("y",random_y);
+		hole.setAttribute("id","hole"+h);
 		hole_area.appendChild(hole);
+		h++;
 	}
 	
 	function create_saw(){
@@ -501,9 +535,11 @@
 		saw_x=0;
 		saw_y=Math.round(Math.random()*800)+50;
 		g_saw.setAttribute("transform","translate("+saw_x+" "+saw_y+")");
+		g_saw.setAttribute("id","group_saw");
 		hole_area.appendChild(g_saw);
+		var group_saw=document.getElementById("group_saw");
 		g_rotate_saw=document.createElementNS(svg1.namespaceURI,"g");
-		g_rotate_saw.setAttribute("id","rotate_saw"+room);
+		g_rotate_saw.setAttribute("id","rotate_saw");
 		g_saw.appendChild(g_rotate_saw);
 		saw=document.createElementNS(svg1.namespaceURI,"image");
 		saw.setAttributeNS("http://www.w3.org/1999/xlink","href","saw.png");
